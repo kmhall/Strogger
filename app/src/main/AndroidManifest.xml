@@ -27,8 +27,7 @@
         <activity android:name=".MyProfileActivity"></activity>
         <activity android:name=".HomeActivity"></activity>
         <activity android:name=".SettingsActivity"></activity>
-
-
+        <activity android:name=".RunCountdownActivity"></activity>
     </application>
 
 </manifest>
