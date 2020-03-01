@@ -9,17 +9,35 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 public class AccountActivity extends AppCompatActivity {
 
     protected DrawerLayout dl;
     private ActionBarDrawerToggle abdt;
 
+    private FirebaseAuth mAuth;
+
+    private FirebaseAuth.AuthStateListener mAuthListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
+
+
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if (firebaseAuth.getCurrentUser() == null){
+                    startActivity(new Intent(AccountActivity.this, LoginActivity.class));
+                }
+            }
+        };
 
         //Side nav setup
         dl = (DrawerLayout) findViewById(R.id.dl);
@@ -54,7 +72,7 @@ public class AccountActivity extends AppCompatActivity {
 
                     startActivity(new Intent(AccountActivity.this, SettingsActivity.class));
                 }else if(id == R.id.logout){
-                    Toast.makeText(AccountActivity.this, "Logout", Toast.LENGTH_SHORT).show();
+                    mAuth.signOut();
                 }
                 return true;
             }
@@ -64,5 +82,12 @@ public class AccountActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         return abdt.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (null) and update UI accordingly.
+        mAuth.addAuthStateListener(mAuthListener);
     }
 }
