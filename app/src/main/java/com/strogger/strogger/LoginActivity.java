@@ -91,6 +91,14 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        Button mForgotPasswordButton = findViewById(R.id.forgot_password_button);
+        mForgotPasswordButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
+            }
+        });
+
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }

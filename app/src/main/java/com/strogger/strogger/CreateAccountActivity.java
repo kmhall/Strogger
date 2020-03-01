@@ -65,6 +65,14 @@ public class CreateAccountActivity extends AppCompatActivity {
             }
         });
 
+        Button mLoginPageButton = findViewById(R.id.login_page_button);
+        mLoginPageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(CreateAccountActivity.this, LoginActivity.class));
+            }
+        });
+
         mCreateAccountFormView = findViewById(R.id.create_account_form);
         mProgressView = findViewById(R.id.create_account_progress);
     }
@@ -108,8 +116,6 @@ public class CreateAccountActivity extends AppCompatActivity {
                 cancel = true;
             }
         }
-
-
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
