@@ -44,7 +44,7 @@ public class AccountActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
+        // Check if user is signed in (null) and update UI accordingly.
         mAuth.addAuthStateListener(mAuthListener);
     }
 }
