@@ -78,7 +78,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if (firebaseAuth.getCurrentUser() != null){
-                    startActivity(new Intent(LoginActivity.this, AccountActivity.class));
+                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                 }
             }
         };
