@@ -91,11 +91,25 @@ public class CreateAccountActivity extends AppCompatActivity {
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !TextUtils.isEmpty(confirmPassword) && !isPasswordValid(password) && !arePasswordsSame(password, confirmPassword)) {
+        if (!isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
         }
+
+        if (!arePasswordsSame(password, confirmPassword)){
+            if (!isPasswordValid(confirmPassword)) {
+                mConfirmPasswordView.setError(getString(R.string.error_invalid_password));
+                focusView = mConfirmPasswordView;
+                cancel = true;
+            } else{
+                mConfirmPasswordView.setError(getString(R.string.error_password_matching));
+                focusView = mConfirmPasswordView;
+                cancel = true;
+            }
+        }
+
+
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
