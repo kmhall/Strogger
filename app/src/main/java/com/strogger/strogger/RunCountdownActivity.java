@@ -9,6 +9,6 @@ public class RunCountdownActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.toolbar);
+        setContentView(R.layout.run_countdown);
     }
 }

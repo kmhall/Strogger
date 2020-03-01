@@ -81,14 +81,8 @@
                 android:text="@string/action_sign_in_short"
                 android:textStyle="bold" />
 
-            <Switch
-                android:id="@+id/switch2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/login_save" />
-
             <Button
-                android:id="@+id/button"
+                android:id="@+id/forgot_password_button"
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

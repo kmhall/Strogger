@@ -13,6 +13,7 @@
         android:roundIcon="@mipmap/image_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ForgotPasswordActivity"></activity>
         <activity android:name=".CreateAccountActivity" />
         <activity android:name=".AccountActivity" />
         <activity
@@ -28,6 +29,7 @@
         <activity android:name=".HomeActivity"></activity>
         <activity android:name=".SettingsActivity"></activity>
         <activity android:name=".RunCountdownActivity"></activity>
+
     </application>
 
 </manifest>
