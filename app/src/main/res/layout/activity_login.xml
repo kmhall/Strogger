@@ -36,8 +36,8 @@
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
                 android:layout_height="249dp"
-                app:srcCompat="@drawable/runners"
-                tools:srcCompat="@drawable/runners" />
+                app:srcCompat="@mipmap/runners"
+                tools:srcCompat="@mipmap/runners" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
