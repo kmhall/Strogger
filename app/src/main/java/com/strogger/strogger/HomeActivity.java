@@ -11,6 +11,7 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 //import android.support.annotation.Nullable;
@@ -21,6 +22,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.UUID;
+
+import androidx.annotation.RequiresApi;
 
 public class HomeActivity extends AccountActivity implements View.OnClickListener{
 
@@ -34,6 +37,7 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
     private BluetoothGattCharacteristic bluetoothGattCharacteristic;
     private final String tag = "Karson";
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,6 +117,7 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
     }
 
     private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             BLE_Message.setText(Integer.toString(characteristic.getIntValue(0,0)));

@@ -78,7 +78,7 @@ public class MyProfileActivity extends AccountActivity implements View.OnClickLi
 
                 User user = new User(first.getText().toString(), last.getText().toString(), phone.getText().toString(),dob.getText().toString());
                 mDatabase = FirebaseDatabase.getInstance().getReference();
-                mDatabase.child("users").child(myUserId).push().setValue(user);
+                mDatabase.child("users").child(myUserId).setValue(user);
 
                 startActivity(new Intent(MyProfileActivity.this, MyProfileActivity.class));
         }
