@@ -66,7 +66,7 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
     {
         switch (view.getId()) {
             case R.id.new_run_button:
-                startActivity(new Intent(HomeActivity.this, RunCountdownActivity.class));
+                startActivity(new Intent(HomeActivity.this, CurrentRunActivity.class));
         }
     }
 
