@@ -21,5 +21,12 @@
     <string name="Close">NavBar</string>
 
     <string name="toolbar_title">Dynamic Title</string>
+    <string name="end_run">End Run</string>
+    <string name="pause">Pause</string>
+    <string name="create_account">Create Account</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="already_signed_up">Already signed up?</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign Up</string>
 
 </resources>
