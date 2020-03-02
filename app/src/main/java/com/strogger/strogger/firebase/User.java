@@ -38,4 +38,20 @@ public class User {
     public String getDob() {
         return dob;
     }
+
+    public void setFirst(String first) {
+        this.first = first;
+    }
+
+    public void setLast(String last) {
+        this.last = last;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
 }
