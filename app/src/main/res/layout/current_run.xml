@@ -16,24 +16,31 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="30sp"
-        android:layout_marginTop="150dp"/>
+        android:textSize="75sp"
+        android:layout_marginTop="100dp"/>
 
-    <Button
-        android:id="@+id/pause_chronometer_button"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/email_login_form"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/pause"
+        android:gravity="center"
         android:layout_gravity="center"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/chronometer_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/end_run_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/end_run"
-        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_gravity="center"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="70dp"/>
 
 </LinearLayout>
