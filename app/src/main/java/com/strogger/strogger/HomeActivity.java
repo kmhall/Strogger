@@ -1,15 +1,26 @@
 package com.strogger.strogger;
 
+import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.util.UUID;
 
 public class HomeActivity extends AccountActivity implements View.OnClickListener{
 
@@ -18,11 +29,15 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
     private BluetoothAdapter bluetoothAdapter;
     private final int REQUEST_ENABLE_BT = 777;
     private TextView BLE_Message;
+    private BluetoothDevice bluetoothDevice;
+    private BluetoothGatt bluetoothGatt;
+    private BluetoothGattCharacteristic bluetoothGattCharacteristic;
+    private final String tag = "Karson";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final TextView mTitle =  findViewById(R.id.toolbar_title);
+        final TextView mTitle = findViewById(R.id.toolbar_title);
         mTitle.setText("Home");
 
         LayoutInflater inflater = (LayoutInflater) this
@@ -33,20 +48,47 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
         newRunButton = findViewById(R.id.new_run_button);
         newRunButton.setOnClickListener(this);
 
+        Log.d(tag, "Starting ble stuff");
+
         BLE_Message = findViewById(R.id.BLE_Message);
-        if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            Log.d(tag, "bad device");
             BLE_Message.setText("Device does not support Bluetooth LE connections");
             BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
         } else {
+            Log.d(tag, "good device");
             BLE_Message.setText("");
         }
 
         final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
-        if(bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
+        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
+            Log.d(tag, "blu off");
             Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBTIntent, REQUEST_ENABLE_BT);
         }
+        if (!bluetoothAdapter.getBondedDevices().iterator().hasNext()) {
+            Log.d(tag, "nonono");
+            BLE_Message.setText("No paired devices");
+            BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
+        } else {
+            Log.d(tag, "pair found");
+            bluetoothDevice = bluetoothAdapter.getBondedDevices().iterator().next();
+            Log.d(tag, "a");
+            bluetoothGatt = bluetoothDevice.connectGatt(this, false, gattCallback);
+            Log.d(tag, "b");
+            bluetoothGatt.discoverServices();
+
+            Log.d(tag, "serching");
+            bluetoothGatt.getServices();
+            Log.d(tag,Integer.toString(bluetoothGatt.getServices().size()));
+            //bluetoothGatt.getServices().get(0);
+            Log.d(tag, "x");
+            //bluetoothGattCharacteristic = bluetoothGatt.getServices().get(0).getCharacteristics().get(0);
+            Log.d(tag, "c");
+            //bluetoothGatt.setCharacteristicNotification(bluetoothGattCharacteristic,true);
+        }
+
     }
 
     @Override
@@ -69,6 +111,13 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
                 startActivity(new Intent(HomeActivity.this, CurrentRunActivity.class));
         }
     }
+
+    private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
+        @Override
+        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+            BLE_Message.setText(Integer.toString(characteristic.getIntValue(0,0)));
+        }
+    };
 
 
 }
