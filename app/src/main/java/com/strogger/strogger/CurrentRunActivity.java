@@ -73,7 +73,7 @@ public class CurrentRunActivity extends AppCompatActivity {
     }
 
     public void writeToFirebase() {
-        //mDatabase.child("users").child("IkIpCl7JftPeaw3q1jjAeGODQmg2").child("last").setValue("Mitchell");
+        // refer to MyProfileActivity code for updating firebase
         startActivity(new Intent(CurrentRunActivity.this, HomeActivity.class));
     }
 

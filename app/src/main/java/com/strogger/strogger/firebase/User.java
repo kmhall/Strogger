@@ -2,8 +2,6 @@ package com.strogger.strogger.firebase;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
-import java.security.SecureRandom;
-
 @IgnoreExtraProperties
 public class User {
 
@@ -26,15 +24,12 @@ public class User {
     public String getFirst() {
         return first;
     }
-
     public String getLast() {
         return last;
     }
-
     public String getPhone() {
         return phone;
     }
-
     public String getDob() {
         return dob;
     }
@@ -42,15 +37,12 @@ public class User {
     public void setFirst(String first) {
         this.first = first;
     }
-
     public void setLast(String last) {
         this.last = last;
     }
-
     public void setPhone(String phone) {
         this.phone = phone;
     }
-
     public void setDob(String dob) {
         this.dob = dob;
     }
