@@ -42,14 +42,18 @@ public class MyProfileActivity extends AccountActivity implements View.OnClickLi
         switch (view.getId()) {
             case R.id.update_profile:
                 //TODO: Clean data before placing
-                //final EditText first = findViewById(R.id.profile_first);
-                User user = new User("Lyle", "Hall", "8472549019","05/12/2000");
-                String myUserId = super.mAuth.getUid();
-                mDatabase = FirebaseDatabase.getInstance().getReference();
-                mDatabase.child("users").child(myUserId).child("first").setValue("asdf");
-                //myRef.child("first").setValue(first.getText());
-                //first.setHint(first.getText());
+                final EditText first = findViewById(R.id.profile_first);
+                final EditText last = findViewById(R.id.profile_last);
+                final EditText dob = findViewById(R.id.profile_dob);
+                final EditText phone = findViewById(R.id.profile_phone);
 
+                String myUserId = super.mAuth.getUid();
+                User user = new User(first.getText().toString(), last.getText().toString(), phone.getText().toString(),dob.getText().toString());
+
+                mDatabase = FirebaseDatabase.getInstance().getReference();
+                mDatabase.child("users").child(myUserId).setValue(user);
+
+                startActivity(new Intent(MyProfileActivity.this, MyProfileActivity.class));
         }
     }
 }

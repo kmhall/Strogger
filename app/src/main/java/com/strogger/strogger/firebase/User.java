@@ -2,6 +2,8 @@ package com.strogger.strogger.firebase;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.security.SecureRandom;
+
 @IgnoreExtraProperties
 public class User {
 
@@ -20,7 +22,6 @@ public class User {
         this.phone = phone;
         this.dob = dob;
     }
-
 
     public String getFirst() {
         return first;
