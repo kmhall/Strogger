@@ -24,6 +24,8 @@ import android.widget.TextView;
 
 import java.util.UUID;
 
+import static com.strogger.strogger.SettingsActivity.bluetoothPopupEnable;
+
 public class HomeActivity extends AccountActivity implements View.OnClickListener{
 
     private Button newRunButton;
@@ -63,8 +65,9 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
 
             final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             bluetoothAdapter = bluetoothManager.getAdapter();
-            if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
-                Log.d(tag, "blu off");
+            //if ((bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) && bluetoothPopupEnable) {
+            if ((bluetoothAdapter == null || !bluetoothAdapter.isEnabled())) {
+            Log.d(tag, "blu off");
                 Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBTIntent, REQUEST_ENABLE_BT);
             } else {
