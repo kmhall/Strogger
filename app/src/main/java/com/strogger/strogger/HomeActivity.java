@@ -25,11 +25,8 @@ import android.widget.TextView;
 
 import java.util.UUID;
 
-<<<<<<< HEAD
 import androidx.annotation.RequiresApi;
-=======
-import static com.strogger.strogger.SettingsActivity.bluetoothPopupEnable;
->>>>>>> 83b9fcb173b576552e3f9b65dd1dec7e418d0a8e
+
 
 public class HomeActivity extends AccountActivity implements View.OnClickListener{
 
