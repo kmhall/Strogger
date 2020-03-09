@@ -7,6 +7,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.strogger.strogger.firebase.DeviceReading;
 import com.strogger.strogger.firebase.Run;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,7 +20,10 @@ import android.widget.EditText;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class CurrentRunActivity extends AppCompatActivity {
@@ -31,14 +35,25 @@ public class CurrentRunActivity extends AppCompatActivity {
     private long lastPause;
 
     private DateFormat dateFormat;
-    Date date = new Date();
+    Date startDate = new Date();
+
+    ArrayList readings;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
-        date = new Date();
+        readings = new ArrayList();
+        //TEMPORARY USING TO POPULATE DATABASE WITH MOCK READINGS
+        for(int i=0; i<10;i++){
+            DeviceReading reading = new DeviceReading(new Random().nextInt(100),i);
+            readings.add(reading);
+        }
+
+
+        startDate = new Date();
         dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
         setContentView(R.layout.current_run);
@@ -87,16 +102,18 @@ public class CurrentRunActivity extends AppCompatActivity {
     }
 
     public void writeToFirebase() {
-        // refer to MyProfileActivity code for updating firebase
-        final Chronometer chronometer = findViewById(R.id.chronometer);
-        long millis = SystemClock.elapsedRealtime() - chronometer.getBase();
-        String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
-                TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
-                TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+        final Chronometer c = findViewById(R.id.chronometer);
 
-        Run run = new Run(dateFormat.format(date),hms,0);
+        long millis = SystemClock.elapsedRealtime() - c.getBase();
+        Date result = new Date(millis - 64800000);
+        SimpleDateFormat hmsFormat = new SimpleDateFormat("HH:mm:ss");
+        String hms = hmsFormat.format(result);
+
+
+
+        Run run = new Run(dateFormat.format(startDate),hms,0, readings);
+
         String myUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("runs").child(myUserId).push().setValue(run);
 
