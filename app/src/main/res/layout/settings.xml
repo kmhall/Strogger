@@ -13,11 +13,18 @@
         android:layout_marginTop="60dp"
         android:text="Enable Bluetooth requests on home screen" />
 
+    <Switch
+        android:id="@+id/audioPopup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bluetoothPopup"
+        android:text="Enable audio feedback" />
+
     <LinearLayout
         android:id="@+id/height"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/bluetoothPopup"
+        android:layout_below="@id/audioPopup"
         android:orientation="horizontal">
 
         <TextView
