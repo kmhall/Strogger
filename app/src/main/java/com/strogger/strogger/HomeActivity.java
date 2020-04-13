@@ -1,5 +1,6 @@
 package com.strogger.strogger;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -17,13 +18,28 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 //import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.UUID;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.strogger.strogger.firebase.Run;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 import androidx.annotation.RequiresApi;
 
@@ -32,6 +48,12 @@ import static com.strogger.strogger.GlobalVariables.bluetoothPopupSwitch;
 public class HomeActivity extends AccountActivity implements View.OnClickListener{
 
     private Button newRunButton;
+    ListView mListView;
+    private DatabaseReference mDatabase;
+    private String myUserId;
+
+    ArrayList<String> runTimes = new ArrayList<>();
+    ArrayList<String> runDates = new ArrayList<>();
 
     private BluetoothAdapter bluetoothAdapter;
     private final int REQUEST_ENABLE_BT = 777;
@@ -56,6 +78,33 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
         newRunButton = findViewById(R.id.new_run_button);
         newRunButton.setOnClickListener(this);
 
+        // Grab runs info //////////
+        myUserId = super.mAuth.getUid();
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("runs").child(myUserId);
+        mListView = (ListView) findViewById(R.id.ListView);
+
+        ArrayAdapter<String> myArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, runTimes);
+
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    Run run = postSnapshot.getValue(Run.class);
+                    runTimes.add(run.getElapsedTime());
+                    runDates.add(run.getStartTime());
+                }
+                CustomAdaptor customAdaptor = new CustomAdaptor();
+                mListView.setAdapter(customAdaptor);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // ...
+            }
+        });
+        // Grab runs info //////////
+
+        ///Bluetooth Initialization///
         Log.d(tag, "Starting ble stuff");
 
         BLE_Message = findViewById(R.id.BLE_Message);
@@ -80,29 +129,9 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
 
             IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
             registerReceiver(mReceiver, filter);
-            /*
-            if (!bluetoothAdapter.getBondedDevices().iterator().hasNext()) {
-                Log.d(tag, "nonono");
-                BLE_Message.setText("No paired devices");
-                BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
-            } else {
-                Log.d(tag, "pair found");
-                bluetoothDevice = bluetoothAdapter.getBondedDevices().iterator().next();
-                Log.d(tag, "a");
-                bluetoothGatt = bluetoothDevice.connectGatt(this, false, gattCallback);
-                Log.d(tag, "b");
-                bluetoothGatt.discoverServices();
-
-                Log.d(tag, "serching");
-                bluetoothGatt.getServices();
-                Log.d(tag, Integer.toString(bluetoothGatt.getServices().size()));
-                //bluetoothGatt.getServices().get(0);
-                Log.d(tag, "x");
-                //bluetoothGattCharacteristic = bluetoothGatt.getServices().get(0).getCharacteristics().get(0);
-                Log.d(tag, "c");
-                //bluetoothGatt.setCharacteristicNotification(bluetoothGattCharacteristic,true);
-            }*/
+            // PLACE OF COMMENTED CODE AT BOTTOM OF PAGE
         }
+        ///Bluetooth Initialization///
     }
 
     @Override
@@ -165,5 +194,59 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
         }
     };
 
+    /* CODE WAS IN ONCREATE FUNCTION AT SPECIFIED LOCATION
+            if (!bluetoothAdapter.getBondedDevices().iterator().hasNext()) {
+                Log.d(tag, "nonono");
+                BLE_Message.setText("No paired devices");
+                BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
+            } else {
+                Log.d(tag, "pair found");
+                bluetoothDevice = bluetoothAdapter.getBondedDevices().iterator().next();
+                Log.d(tag, "a");
+                bluetoothGatt = bluetoothDevice.connectGatt(this, false, gattCallback);
+                Log.d(tag, "b");
+                bluetoothGatt.discoverServices();
 
+                Log.d(tag, "serching");
+                bluetoothGatt.getServices();
+                Log.d(tag, Integer.toString(bluetoothGatt.getServices().size()));
+                //bluetoothGatt.getServices().get(0);
+                Log.d(tag, "x");
+                //bluetoothGattCharacteristic = bluetoothGatt.getServices().get(0).getCharacteristics().get(0);
+                Log.d(tag, "c");
+                //bluetoothGatt.setCharacteristicNotification(bluetoothGattCharacteristic,true);
+            }*/
+
+    class CustomAdaptor extends BaseAdapter{
+
+        @Override
+        public int getCount() {
+            return runDates.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int i, View convertview, ViewGroup viewGroup) {
+            @SuppressLint({"ViewHolder", "InflateParams"}) View view = getLayoutInflater().inflate(R.layout.customlayout, null);
+
+            TextView mTimeTextView = view.findViewById(R.id.runTime);
+            TextView mDateTextView = view.findViewById(R.id.runDate);
+
+            String date = runDates.get(i).substring(0,10);
+
+            mTimeTextView.setText(runTimes.get(i));
+            mDateTextView.setText(date);
+
+            return view;
+        }
+    }
 }
