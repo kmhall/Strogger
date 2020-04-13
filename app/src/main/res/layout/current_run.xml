@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:textSize="75sp"
-        android:layout_marginTop="100dp"/>
+        android:layout_marginTop="10dp"/>
 
     <LinearLayout
         android:id="@+id/email_login_form"
@@ -34,6 +34,12 @@
             android:layout_height="wrap_content" />
 
     </LinearLayout>
+    
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/linechart"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="40dp"/>
 
     <Button
         android:id="@+id/end_run_button"
@@ -41,6 +47,6 @@
         android:layout_height="wrap_content"
         android:text="@string/end_run"
         android:layout_gravity="center"
-        android:layout_marginTop="70dp"/>
+        android:layout_marginTop="30dp"/>
 
 </LinearLayout>
