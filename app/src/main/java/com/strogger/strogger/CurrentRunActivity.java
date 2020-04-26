@@ -49,6 +49,10 @@ public class CurrentRunActivity extends AppCompatActivity{
     private LineChart mChart;
     private boolean plotData = true;
 
+    int value = 0;
+    int lastValue;
+    int lowerBound = 1250;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +69,7 @@ public class CurrentRunActivity extends AppCompatActivity{
         mChart.setPinchZoom(true);
 
         YAxis leftAxis = mChart.getAxisLeft();
-        leftAxis.setAxisMaximum(125);
+        leftAxis.setAxisMaximum(1750);
         leftAxis.setAxisMinimum(0);
 
         YAxis rightAxis = mChart.getAxisRight();
@@ -108,27 +112,72 @@ public class CurrentRunActivity extends AppCompatActivity{
 
         chronometer = findViewById(R.id.chronometer);
         chronometer.setBase(SystemClock.elapsedRealtime());
-        chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
-            @Override
-            public void onChronometerTick(Chronometer chronometer) {
-                chronometerTick();
-            }
-        });
         chronometer.start();
         running = true;
     }
 
-    public void chronometerTick(){
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    if (plotData){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                int random;
+                                if (value < lowerBound){
+                                    lastValue = value;
+                                    value += 75;
+                                }
+                                else if (value < 1500){
+                                    if (lastValue < lowerBound){
+                                        random = new Random().nextInt(100 - 25) + 25;
+                                        value += random;
+                                    } else {
+                                        if (value < 1350){
+                                            lowerBound = 1350;
+                                        }
+                                        random = new Random().nextInt(25) - 75;
+                                        value += random;
+                                    }
+                                }
+                                else {
+                                    lastValue = value;
+                                    random = new Random().nextInt(50);
+                                    value = value - random;
+                                }
+                                DeviceReading reading = new DeviceReading(value,count);
+                                readings.add(reading);
+                                addEntry(value);
+                                count++;
+                            }
+                        });
+                    }
+                    try {
+                        Thread.sleep(60);
+                    } catch (InterruptedException e) {
+
+                    }
+                }
+            }
+        }).start();
+    }
+/*
+    public void runGraph(){
         int value;
-        if (plotData){
-            value = new Random().nextInt(100);
+        while (plotData){
+            value = new Random().nextInt(1750);
             DeviceReading reading = new DeviceReading(value,count);
             readings.add(reading);
             addEntry(value);
             count++;
         }
     }
-
+*/
     public void changeChronometer() {
         FloatingActionButton mChronometerButton = findViewById(R.id.chronometer_button);
         if(!running){
@@ -177,8 +226,14 @@ public class CurrentRunActivity extends AppCompatActivity{
             data.addEntry( new Entry(set.getEntryCount(), reading), 0);
             data.notifyDataChanged();
 
+            if (value >= 1250){
+                YAxis leftAxis = mChart.getAxisLeft();
+                leftAxis.setAxisMaximum(1600);
+                leftAxis.setAxisMinimum(1250);
+            }
+
             mChart.notifyDataSetChanged();
-            //mChart.setMaxVisibleValueCount(150);
+            mChart.setVisibleXRangeMaximum(60);
             mChart.moveViewToX(data.getEntryCount());
         }
     }
