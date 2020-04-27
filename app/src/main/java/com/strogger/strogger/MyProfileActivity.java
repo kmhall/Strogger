@@ -9,12 +9,10 @@ package com.strogger.strogger;
         import android.widget.EditText;
         import android.widget.TextView;
 
-        import com.google.firebase.database.ChildEventListener;
         import com.google.firebase.database.DataSnapshot;
         import com.google.firebase.database.DatabaseError;
         import com.google.firebase.database.DatabaseReference;
         import com.google.firebase.database.FirebaseDatabase;
-        import com.google.firebase.database.Query;
         import com.google.firebase.database.ValueEventListener;
         import com.strogger.strogger.firebase.User;
 
@@ -78,7 +76,7 @@ public class MyProfileActivity extends AccountActivity implements View.OnClickLi
 
                 User user = new User(first.getText().toString(), last.getText().toString(), phone.getText().toString(),dob.getText().toString());
                 mDatabase = FirebaseDatabase.getInstance().getReference();
-                mDatabase.child("users").child(myUserId).push().setValue(user);
+                mDatabase.child("users").child(myUserId).setValue(user);
 
                 startActivity(new Intent(MyProfileActivity.this, MyProfileActivity.class));
         }

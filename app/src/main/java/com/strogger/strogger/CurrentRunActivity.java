@@ -1,12 +1,29 @@
 package com.strogger.strogger;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.strogger.strogger.firebase.DeviceReading;
+import com.strogger.strogger.firebase.Run;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.SystemClock;
@@ -14,7 +31,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
 
-public class CurrentRunActivity extends AppCompatActivity {
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Random;
+
+public class CurrentRunActivity extends AppCompatActivity{
     private Chronometer chronometer;
     private boolean running;
 
@@ -22,12 +45,57 @@ public class CurrentRunActivity extends AppCompatActivity {
 
     private long lastPause;
 
+    private DateFormat dateFormat;
+    Date startDate = new Date();
+
+    ArrayList readings;
+    int count = 0;
+
+    private LineChart mChart;
+    private boolean plotData = true;
+
+    int value = 0;
+    int lastValue;
+    int lowerBound = 1250;
+    int timerCount = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.current_run);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        readings = new ArrayList();
+
+        mChart = (LineChart) findViewById(R.id.linechart);
+        mChart.getDescription().setEnabled(true);
+        mChart.getDescription().setText("");
+
+        mChart.setDragEnabled(true);
+        mChart.setScaleEnabled(true);
+        mChart.setPinchZoom(true);
+        YAxis leftAxis = mChart.getAxisLeft();
+
+        leftAxis.setTextColor(0XFFFFFFFF);
+        leftAxis.setAxisMaximum(1600);
+        leftAxis.setAxisMinimum(1250);
+
+
+        YAxis rightAxis = mChart.getAxisRight();
+        rightAxis.setEnabled(false);
+        rightAxis.setTextColor(0XFFFFFFFF);
+
+        XAxis x1 = mChart.getXAxis();
+        x1.setAvoidFirstLastClipping(true);
+        x1.setEnabled(true);
+        x1.setTextColor(0XFFFFFFFF);
+        LineData data = new LineData();
+
+        mChart.setData(data);
+
+        startDate = new Date();
+        dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+
+
 
         FloatingActionButton mChronometerButton = findViewById(R.id.chronometer_button);
         mChronometerButton.setImageResource(R.drawable.ic_pause);
@@ -42,9 +110,11 @@ public class CurrentRunActivity extends AppCompatActivity {
         mRunButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                plotData = false;
                 writeToFirebase();
             }
         });
+
     }
 
     @Override
@@ -53,8 +123,82 @@ public class CurrentRunActivity extends AppCompatActivity {
 
         chronometer = findViewById(R.id.chronometer);
         chronometer.setBase(SystemClock.elapsedRealtime());
+        chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            @Override
+            public void onChronometerTick(Chronometer chronometer) {
+                timerCount++;
+            }
+        });
         chronometer.start();
         running = true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    if (plotData){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                int random;
+                                if (value < lowerBound){
+                                    lastValue = value;
+                                    value += 75;
+                                }
+                                else if (value < 1500){
+                                    if (lastValue < lowerBound){
+                                        random = new Random().nextInt(100 - 25) + 25;
+                                        value += random;
+                                    } else {
+                                        if (value < 1350){
+                                            lowerBound = 1350;
+                                        }
+                                        random = new Random().nextInt(25) - 75;
+                                        value += random;
+                                    }
+                                }
+                                else {
+                                    if (timerCount > 30){
+                                        timerCount = 0;
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(CurrentRunActivity.this);
+
+                                        builder.setCancelable(true);
+                                        builder.setTitle("Injury Warning!");
+                                        builder.setMessage("Try to extend your running stride to decrease force impact on ground.");
+
+                                        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.cancel();
+                                            }
+                                        });
+                                        builder.show();
+                                    }
+
+                                    lastValue = value;
+                                    random = new Random().nextInt(50);
+                                    value = value - random;
+                                }
+                                DeviceReading reading = new DeviceReading(value,count);
+                                readings.add(reading);
+                                addEntry(value);
+                                count++;
+                            }
+                        });
+                    }
+                    try {
+                        Thread.sleep(60);
+                    } catch (InterruptedException e) {
+
+                    }
+                }
+            }
+        }).start();
     }
 
     public void changeChronometer() {
@@ -63,18 +207,62 @@ public class CurrentRunActivity extends AppCompatActivity {
             chronometer.setBase(chronometer.getBase() + SystemClock.elapsedRealtime() - lastPause);
             chronometer.start();
             running = true;
+            plotData = true;
             mChronometerButton.setImageResource(R.drawable.ic_pause);
         } else{
             lastPause = SystemClock.elapsedRealtime();
             chronometer.stop();
             running = false;
+            plotData = false;
             mChronometerButton.setImageResource(R.drawable.ic_play_arrow);
         }
     }
 
     public void writeToFirebase() {
-        // refer to MyProfileActivity code for updating firebase
+        final Chronometer c = findViewById(R.id.chronometer);
+
+        long millis = SystemClock.elapsedRealtime() - c.getBase();
+        Date result = new Date(millis - 64800000);
+        SimpleDateFormat hmsFormat = new SimpleDateFormat("HH:mm:ss");
+        String hms = hmsFormat.format(result);
+
+        Run run = new Run(dateFormat.format(startDate),hms,0, readings);
+
+        String myUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("runs").child(myUserId).push().setValue(run);
+
         startActivity(new Intent(CurrentRunActivity.this, HomeActivity.class));
     }
 
+    private void addEntry(int reading){
+        LineData data = mChart.getData();
+
+        if(data != null){
+            ILineDataSet set = data.getDataSetByIndex(0);
+
+            if(set==null){
+                set = createSet();
+                data.addDataSet(set);
+            }
+
+            data.addEntry( new Entry(set.getEntryCount(), reading), 0);
+            data.notifyDataChanged();
+
+            mChart.notifyDataSetChanged();
+            mChart.setVisibleXRangeMaximum(40);
+            mChart.moveViewToX(data.getEntryCount());
+        }
+    }
+
+    private LineDataSet createSet(){
+        LineDataSet set = new LineDataSet(null, "GRF Readings");
+        set.setValueTextColor(0X00000000);
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set.setLineWidth(1f);
+        set.setColor(0XFF44B84B);
+        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        set.setCubicIntensity(0.2f);
+        return set;
+    }
 }

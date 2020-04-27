@@ -5,8 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -14,10 +12,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.strogger.strogger.firebase.User;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -142,6 +146,14 @@ public class CreateAccountActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 showProgress(false, true);
+
+                                //Create a user in the database and fill with blank data
+                                String myUserId = mAuth.getUid();
+                                User user = new User("", "", "", "");
+                                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                                mDatabase.child("users").child(myUserId).setValue(user);
+
+
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Toast.makeText(CreateAccountActivity.this, "Creating an Account Failed.",
