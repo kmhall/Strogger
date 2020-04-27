@@ -1,12 +1,14 @@
 package com.strogger.strogger;
 
 import android.annotation.SuppressLint;
+import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothProfile;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +16,9 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
+//import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,10 +26,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import androidx.annotation.RequiresApi;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,11 +37,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.strogger.strogger.firebase.Run;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+
+import androidx.annotation.RequiresApi;
 
 import static com.strogger.strogger.GlobalVariables.bluetoothPopupSwitch;
-
-//import android.support.annotation.Nullable;
 
 public class HomeActivity extends AccountActivity implements View.OnClickListener{
 
@@ -106,7 +112,7 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
             Log.d(tag, "bad device");
             BLE_Message.setText("Device doesn't support Bluetooth LE");
             BLE_Message.setTextSize(20);
-            BLE_Message.setBackgroundColor(getResources().getColor(R.color.button_back_red));
+            //BLE_Message.setBackgroundColor(getResources().getColor(R.color.darkText));
         } else {
             Log.d(tag, "good device");
             BLE_Message.setText("");
@@ -114,12 +120,12 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
             final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             bluetoothAdapter = bluetoothManager.getAdapter();
             if ((bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) && bluetoothPopupSwitch) {
-                Log.d(tag, "blu off");
+            Log.d(tag, "blu off");
                 Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBTIntent, REQUEST_ENABLE_BT);
             } else {
-                BLE_Message.setText("Bluetooth Enabled");
-                BLE_Message.setBackgroundColor(getResources().getColor(R.color.button_back_grey));
+                BLE_Message.setText("ble already on");
+                //BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.white));
             }
 
             IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
@@ -133,11 +139,11 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_CANCELED) {
-            BLE_Message.setText("Please Enable Bluetooth!");
-            BLE_Message.setBackgroundColor(getResources().getColor(R.color.button_back_red));
+            BLE_Message.setText("Bluetooth is turned off");
+            //BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
         } else {
-            BLE_Message.setText("Bluetooth Enabled");
-            BLE_Message.setBackgroundColor(getResources().getColor(R.color.button_back_grey));
+            BLE_Message.setText("Enabled");
+            //BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
         }
     }
 
@@ -169,20 +175,20 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
                         BluetoothAdapter.ERROR);
                 switch (state) {
                     case BluetoothAdapter.STATE_OFF:
-                        BLE_Message.setText("Please Enable Bluetooth!");
-                        BLE_Message.setBackgroundColor(getResources().getColor(R.color.button_back_red));
+                        BLE_Message.setText("Bluetooth off");
+                        BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.holo_purple));
                         break;
                     case BluetoothAdapter.STATE_TURNING_OFF:
                         BLE_Message.setText("Turning Bluetooth off...");
-                        BLE_Message.setBackgroundColor(getResources().getColor(R.color.button_back_red));
+                        BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
                         break;
                     case BluetoothAdapter.STATE_ON:
-                        BLE_Message.setText("Bluetooth Enabled");
-                        BLE_Message.setBackgroundColor(getResources().getColor(R.color.button_back_grey));
+                        BLE_Message.setText("Bluetooth on");
+                        BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_bright));
                         break;
                     case BluetoothAdapter.STATE_TURNING_ON:
                         BLE_Message.setText("Turning Bluetooth on...");
-                        BLE_Message.setBackgroundColor(getResources().getColor(R.color.button_back_grey));
+                        BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
                         break;
                 }
             }
