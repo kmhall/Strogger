@@ -122,6 +122,9 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
                 Log.d(tag, "blu off");
                 Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBTIntent, REQUEST_ENABLE_BT);
+            } else if (bluetoothPopupSwitch == false) {
+                BLE_Message.setText("Please Enable Bluetooth!");
+                BLE_Message.setBackgroundColor(getResources().getColor(R.color.button_back_red));
             } else {
                 BLE_Message.setText("Bluetooth Enabled");
                 BLE_Message.setBackgroundColor(getResources().getColor(R.color.button_back_grey));
