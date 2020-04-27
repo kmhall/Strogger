@@ -200,6 +200,7 @@ public class LoginActivity extends AppCompatActivity {
                 int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
                 mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                mProgressView.setBackgroundColor(0XFF2A2F39);
                 mProgressView.animate().setDuration(shortAnimTime).alpha(
                         show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -218,6 +219,7 @@ public class LoginActivity extends AppCompatActivity {
                 int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
                 mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                mProgressView.setBackgroundColor(0XFF2A2F39);
                 mLoginFormView.animate().setDuration(shortAnimTime).alpha(
                         show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                     @Override

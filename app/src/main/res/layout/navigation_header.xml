@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center"
-    android:background="@color/colorPrimaryDark">
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:gravity="center"
+android:background="@color/background">
 
-    <ImageView
-        android:layout_width="180dp"
-        android:layout_height="180dp"
-        android:layout_marginBottom="15dp"
-        android:layout_marginTop="15dp"
-        android:background="@drawable/ic_directions_run_black_24dp">
-    </ImageView>
+
+<androidx.appcompat.widget.AppCompatImageView
+    android:tint="@color/lightText"
+    android:layout_width="180dp"
+    android:layout_height="180dp"
+    android:layout_margin="20dp"
+    android:src="@drawable/ic_directions_run_black_24dp" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/darkText"/>
+
 
 </LinearLayout>

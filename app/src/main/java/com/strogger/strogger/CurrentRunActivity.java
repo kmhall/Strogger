@@ -3,6 +3,9 @@ package com.strogger.strogger;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -32,6 +35,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.EditText;
+import android.widget.MediaController;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -67,29 +71,32 @@ public class CurrentRunActivity extends AppCompatActivity{
 
         mChart = (LineChart) findViewById(R.id.linechart);
         mChart.getDescription().setEnabled(true);
-        mChart.getDescription().setText("GRF Readings");
+        mChart.getDescription().setText("");
 
         mChart.setDragEnabled(true);
         mChart.setScaleEnabled(true);
         mChart.setPinchZoom(true);
-
         YAxis leftAxis = mChart.getAxisLeft();
+        leftAxis.setTextColor(0XFFFFFFFF);
         leftAxis.setAxisMaximum(125);
         leftAxis.setAxisMinimum(0);
 
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(false);
+        rightAxis.setTextColor(0XFFFFFFFF);
 
         XAxis x1 = mChart.getXAxis();
         x1.setAvoidFirstLastClipping(true);
         x1.setEnabled(true);
-
+        x1.setTextColor(0XFFFFFFFF);
         LineData data = new LineData();
 
         mChart.setData(data);
 
         startDate = new Date();
         dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+
+
 
         FloatingActionButton mChronometerButton = findViewById(R.id.chronometer_button);
         mChronometerButton.setImageResource(R.drawable.ic_pause);
@@ -193,10 +200,11 @@ public class CurrentRunActivity extends AppCompatActivity{
     }
 
     private LineDataSet createSet(){
-        LineDataSet set = new LineDataSet(null, "Sensor Readings");
+        LineDataSet set = new LineDataSet(null, "GRF Readings");
+        set.setValueTextColor(0X00000000);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set.setLineWidth(3f);
-        set.setColor(Color.MAGENTA);
+        set.setLineWidth(1f);
+        set.setColor(0XFF44B84B);
         set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         set.setCubicIntensity(0.2f);
         return set;
