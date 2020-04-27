@@ -15,6 +15,7 @@
 
     <!-- Create account progress -->
     <ProgressBar
+        android:indeterminateTint="@color/green"
         android:id="@+id/create_account_progress"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
