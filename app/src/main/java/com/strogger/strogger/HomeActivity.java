@@ -11,6 +11,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -113,6 +114,10 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
 
             final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             bluetoothAdapter = bluetoothManager.getAdapter();
+
+            SharedPreferences sharedpreferences = getSharedPreferences("MyPREFERENCES", Context.MODE_PRIVATE);
+            bluetoothPopupSwitch = sharedpreferences.getBoolean("bluetoothPopupSwitch", true);
+
             if ((bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) && bluetoothPopupSwitch) {
                 Log.d(tag, "blu off");
                 Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
