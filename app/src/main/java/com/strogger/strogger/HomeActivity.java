@@ -15,6 +15,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +38,7 @@ import com.strogger.strogger.firebase.Run;
 
 import java.util.ArrayList;
 
+import static com.strogger.strogger.GlobalVariables.audioPopupSwitch;
 import static com.strogger.strogger.GlobalVariables.bluetoothPopupSwitch;
 
 //import android.support.annotation.Nullable;
@@ -117,18 +120,52 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
 
             SharedPreferences sharedpreferences = getSharedPreferences("MyPREFERENCES", Context.MODE_PRIVATE);
             bluetoothPopupSwitch = sharedpreferences.getBoolean("bluetoothPopupSwitch", true);
+            audioPopupSwitch = sharedpreferences.getBoolean("audioPopupSwitch", true);
 
-            if ((bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) && bluetoothPopupSwitch) {
-                Log.d(tag, "blu off");
-                Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBTIntent, REQUEST_ENABLE_BT);
-            } else if (bluetoothPopupSwitch == false) {
-                BLE_Message.setText("Please Enable Bluetooth!");
-                BLE_Message.setBackgroundColor(getResources().getColor(R.color.button_back_red));
+            //Bluetooth not on
+            if ((bluetoothAdapter == null || !bluetoothAdapter.isEnabled())) {
+                //Notification and buzz
+                if (bluetoothPopupSwitch && audioPopupSwitch) {
+                    Log.d(tag, "blu off");
+                    Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE );
+                    assert v != null;
+                    if (Build.VERSION. SDK_INT >= Build.VERSION_CODES. O ) {
+                        v.vibrate(VibrationEffect. createOneShot ( 500 ,
+                                VibrationEffect. DEFAULT_AMPLITUDE )) ;
+                    } else {
+                        //deprecated in API 26
+                        v.vibrate( 500 ) ;
+                    }
+                    Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableBTIntent, REQUEST_ENABLE_BT);
+                //Notification
+                } else if (bluetoothPopupSwitch) {
+                    Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableBTIntent, REQUEST_ENABLE_BT);
+                //Buzz
+                } else if (audioPopupSwitch) {
+                    Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE );
+                    assert v != null;
+                    if (Build.VERSION. SDK_INT >= Build.VERSION_CODES. O ) {
+                        v.vibrate(VibrationEffect. createOneShot ( 500 ,
+                                VibrationEffect. DEFAULT_AMPLITUDE )) ;
+                    } else {
+                        //deprecated in API 26
+                        v.vibrate( 500 ) ;
+                    }
+                    BLE_Message.setText("Please Enable Bluetooth!");
+                    BLE_Message.setBackgroundColor(getResources().getColor(R.color.button_back_red));
+                //Neither
+                } else {
+                    BLE_Message.setText("Please Enable Bluetooth!");
+                    BLE_Message.setBackgroundColor(getResources().getColor(R.color.button_back_red));
+                }
+            //Bluetooth is on
             } else {
                 BLE_Message.setText("Bluetooth Enabled");
                 BLE_Message.setBackgroundColor(getResources().getColor(R.color.button_back_grey));
             }
+
 
             IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
             registerReceiver(mReceiver, filter);
