@@ -49,12 +49,15 @@
                     android:textSize="24dp"
                     android:gravity="center"
                     android:textColor="@color/lightText" />
+
                 <EditText
-                     android:textColor="@color/lightText"
                     android:id="@+id/profile_first"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:inputType="text" />
+                    android:hint="ex. John"
+                    android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-"
+                    android:inputType="textPersonName"
+                    android:textColor="@color/lightText" />
             </LinearLayout>
             <LinearLayout
                 app:theme="@style/textInput2"
@@ -70,13 +73,16 @@
                     android:text="Last"
                     android:textSize="24dp"
                     android:gravity="center"/>
-                <EditText
-                    android:textColor="@color/lightText"
 
+                <EditText
                     android:id="@+id/profile_last"
+
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:inputType="text"/>
+                    android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-"
+                    android:hint="ex. Smith"
+                    android:inputType="textPersonName"
+                    android:textColor="@color/lightText" />
             </LinearLayout>
 
             <LinearLayout
@@ -93,13 +99,15 @@
                 android:text="Phone"
                 android:textSize="24dp"
                 android:gravity="center"/>
-            <EditText
-                android:textColor="@color/lightText"
 
-                android:id="@+id/profile_phone"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="phone"/>
+                <EditText
+                    android:id="@+id/profile_phone"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="ex. 1237891234"
+                    android:inputType="date"
+                    android:textColor="@color/lightText" />
         </LinearLayout>
 
             <LinearLayout
@@ -117,15 +125,17 @@
                     android:text="DOB"
                     android:textSize="24dp"
                     android:gravity="center"/>
-                <EditText
-                    android:textColor="@color/lightText"
 
+                <EditText
                     android:id="@+id/profile_dob"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:inputType="date" />
+                    android:hint="ex. 1990"
+                    android:inputType="date"
+                    android:textColor="@color/lightText" />
             </LinearLayout>
 
             <Button
