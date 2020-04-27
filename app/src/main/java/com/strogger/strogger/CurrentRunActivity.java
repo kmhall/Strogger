@@ -1,6 +1,7 @@
 package com.strogger.strogger;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.strogger.strogger.firebase.DeviceReading;
 import com.strogger.strogger.firebase.Run;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.SystemClock;
@@ -52,6 +54,7 @@ public class CurrentRunActivity extends AppCompatActivity{
     int value = 0;
     int lastValue;
     int lowerBound = 1250;
+    int timerCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +72,8 @@ public class CurrentRunActivity extends AppCompatActivity{
         mChart.setPinchZoom(true);
 
         YAxis leftAxis = mChart.getAxisLeft();
-        leftAxis.setAxisMaximum(1750);
-        leftAxis.setAxisMinimum(0);
+        leftAxis.setAxisMaximum(1600);
+        leftAxis.setAxisMinimum(1250);
 
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(false);
@@ -112,6 +115,12 @@ public class CurrentRunActivity extends AppCompatActivity{
 
         chronometer = findViewById(R.id.chronometer);
         chronometer.setBase(SystemClock.elapsedRealtime());
+        chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            @Override
+            public void onChronometerTick(Chronometer chronometer) {
+                timerCount++;
+            }
+        });
         chronometer.start();
         running = true;
     }
@@ -146,6 +155,23 @@ public class CurrentRunActivity extends AppCompatActivity{
                                     }
                                 }
                                 else {
+                                    if (timerCount > 30){
+                                        timerCount = 0;
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(CurrentRunActivity.this);
+
+                                        builder.setCancelable(true);
+                                        builder.setTitle("Injury Warning!");
+                                        builder.setMessage("Try to extend your running stride to decrease force impact on ground.");
+
+                                        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.cancel();
+                                            }
+                                        });
+                                        builder.show();
+                                    }
+
                                     lastValue = value;
                                     random = new Random().nextInt(50);
                                     value = value - random;
@@ -166,18 +192,7 @@ public class CurrentRunActivity extends AppCompatActivity{
             }
         }).start();
     }
-/*
-    public void runGraph(){
-        int value;
-        while (plotData){
-            value = new Random().nextInt(1750);
-            DeviceReading reading = new DeviceReading(value,count);
-            readings.add(reading);
-            addEntry(value);
-            count++;
-        }
-    }
-*/
+
     public void changeChronometer() {
         FloatingActionButton mChronometerButton = findViewById(R.id.chronometer_button);
         if(!running){
@@ -226,14 +241,8 @@ public class CurrentRunActivity extends AppCompatActivity{
             data.addEntry( new Entry(set.getEntryCount(), reading), 0);
             data.notifyDataChanged();
 
-            if (value >= 1250){
-                YAxis leftAxis = mChart.getAxisLeft();
-                leftAxis.setAxisMaximum(1600);
-                leftAxis.setAxisMinimum(1250);
-            }
-
             mChart.notifyDataSetChanged();
-            mChart.setVisibleXRangeMaximum(60);
+            mChart.setVisibleXRangeMaximum(40);
             mChart.moveViewToX(data.getEntryCount());
         }
     }
@@ -247,6 +256,4 @@ public class CurrentRunActivity extends AppCompatActivity{
         set.setCubicIntensity(0.2f);
         return set;
     }
-
-
 }
