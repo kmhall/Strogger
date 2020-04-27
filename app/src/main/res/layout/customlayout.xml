@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/runnerImage"
+        android:layout_width="83dp"
+        android:layout_height="78dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="33dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:src="@drawable/ic_directions_run_black_24dp"
+        android:tint="@color/darkText" />
+
+    <TextView
+        android:textColor="@color/lightText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/runTime"
+        android:layout_toEndOf="@+id/runnerImage"
+        android:layout_marginStart="22dp"
+        android:layout_alignTop="@+id/runnerImage"
+        android:text="Time"
+         android:textSize="25sp"/>
+
+    <TextView
+        android:textColor="@color/lightText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/runDate"
+        android:layout_toEndOf="@+id/runnerImage"
+        android:layout_marginStart="22dp"
+        android:layout_below="@+id/runTime"
+        android:text="Date"
+         android:textSize="25sp"/>
+
+</RelativeLayout>
