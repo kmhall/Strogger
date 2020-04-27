@@ -28,5 +28,13 @@
     <string name="already_signed_up">Already signed up?</string>
     <string name="login">Login</string>
     <string name="sign_up">Sign Up</string>
+    <string name="strogger">Strogger</string>
+
+    <color name="lightText">#FFFFFF</color>
+    <color name="darkText">#5E626C</color>
+    <color name="background">#2A2F39</color>
+    <color name="green">#44B84B</color>
+
+
 
 </resources>

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingLeft="30px"
+    android:paddingRight="30px"
+android:background="@color/background"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,6 +10,8 @@
     android:layout_marginTop="20dp">
 
     <Switch
+        android:textColor="@color/lightText"
+
         android:id="@+id/bluetoothPopup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,6 +20,8 @@
         android:textSize="18sp" />
 
     <Switch
+        android:textColor="@color/lightText"
+
         android:id="@+id/audioPopup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,6 +30,8 @@
         android:textSize="18sp" />
 
     <LinearLayout
+        app:theme="@style/textInput2"
+
         android:id="@+id/height"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,15 +39,17 @@
         android:orientation="horizontal">
 
         <TextView
+            android:textColor="@color/lightText"
+
             android:id="@+id/heightText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Height"
-            android:textColor="@android:color/primary_text_light"
-            android:textSize="18sp" />
+             android:textSize="18sp" />
 
         <EditText
+            android:textColor="@color/lightText"
             android:id="@+id/heightVal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -47,12 +58,13 @@
             android:hint="Height (inches)"
             android:inputType="number"
             android:maxLines="1"
-            android:text="Error pulling data"
-            android:textColor="@android:color/primary_text_light"
-            android:textSize="18sp" />
+            android:text="5'  11 "
+             android:textSize="18sp" />
     </LinearLayout>
 
     <LinearLayout
+        app:theme="@style/textInput2"
+
         android:id="@+id/weight"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -60,15 +72,18 @@
         android:orientation="horizontal">
 
         <TextView
+            android:textColor="@color/lightText"
+
             android:id="@+id/weightText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Weight"
-            android:textColor="@android:color/primary_text_light"
-            android:textSize="18sp" />
+             android:textSize="18sp" />
 
         <EditText
+            android:textColor="@color/lightText"
+
             android:id="@+id/weightVal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -77,9 +92,8 @@
             android:hint="Weight (pounds)"
             android:inputType="number"
             android:maxLines="1"
-            android:text="Error pulling data"
-            android:textColor="@android:color/primary_text_light"
-            android:textSize="18sp" />
+            android:text="150 lbs"
+             android:textSize="18sp" />
     </LinearLayout>
 
 </RelativeLayout>

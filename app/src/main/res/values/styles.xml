@@ -8,4 +8,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+
+    <style name="textInput">
+        <item name="colorControlNormal">@color/darkText</item>
+        <item name="colorAccent">@color/green</item>
+    </style>
+
+
+    <style name="textInput2">
+        <item name="colorControlNormal">@color/lightText</item>
+        <item name="colorAccent">@color/green</item>
+    </style>
+
 </resources>

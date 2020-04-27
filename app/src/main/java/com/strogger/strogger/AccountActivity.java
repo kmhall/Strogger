@@ -1,6 +1,10 @@
 package com.strogger.strogger;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import android.view.MenuItem;
@@ -54,7 +58,12 @@ public class AccountActivity extends AppCompatActivity {
         //Toolbar setup
         Toolbar mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+
+        Drawable myIcon = getResources().getDrawable( R.drawable.ic_menu_black_24dp );
+        ColorFilter filter = new LightingColorFilter(Color.WHITE, Color.WHITE);
+        myIcon.setColorFilter(filter);
+
+        getSupportActionBar().setHomeAsUpIndicator(myIcon);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("");

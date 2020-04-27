@@ -110,8 +110,9 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
         BLE_Message = findViewById(R.id.BLE_Message);
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Log.d(tag, "bad device");
-            BLE_Message.setText("Device does not support Bluetooth LE connections");
-            BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
+            BLE_Message.setText("Device doesn't support Bluetooth LE");
+            BLE_Message.setTextSize(20);
+            //BLE_Message.setBackgroundColor(getResources().getColor(R.color.darkText));
         } else {
             Log.d(tag, "good device");
             BLE_Message.setText("");
@@ -124,7 +125,7 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
                 startActivityForResult(enableBTIntent, REQUEST_ENABLE_BT);
             } else {
                 BLE_Message.setText("ble already on");
-                BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.white));
+                //BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.white));
             }
 
             IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
@@ -139,10 +140,10 @@ public class HomeActivity extends AccountActivity implements View.OnClickListene
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_CANCELED) {
             BLE_Message.setText("Bluetooth is turned off");
-            BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
+            //BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
         } else {
             BLE_Message.setText("Enabled");
-            BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+            //BLE_Message.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
         }
     }
 
