@@ -1,22 +1,18 @@
 package com.strogger.strogger;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.listener.ChartTouchListener;
-import com.github.mikephil.charting.listener.OnChartGestureListener;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -24,22 +20,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.strogger.strogger.firebase.DeviceReading;
 import com.strogger.strogger.firebase.Run;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.SystemClock;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.EditText;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class CurrentRunActivity extends AppCompatActivity{
     private Chronometer chronometer;
@@ -58,6 +51,11 @@ public class CurrentRunActivity extends AppCompatActivity{
     private LineChart mChart;
     private boolean plotData = true;
 
+    int value = 0;
+    int lastValue;
+    int lowerBound = 1250;
+    int timerCount = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,8 +72,8 @@ public class CurrentRunActivity extends AppCompatActivity{
         mChart.setPinchZoom(true);
 
         YAxis leftAxis = mChart.getAxisLeft();
-        leftAxis.setAxisMaximum(125);
-        leftAxis.setAxisMinimum(0);
+        leftAxis.setAxisMaximum(1600);
+        leftAxis.setAxisMinimum(1250);
 
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(false);
@@ -120,22 +118,79 @@ public class CurrentRunActivity extends AppCompatActivity{
         chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer chronometer) {
-                chronometerTick();
+                timerCount++;
             }
         });
         chronometer.start();
         running = true;
     }
 
-    public void chronometerTick(){
-        int value;
-        if (plotData){
-            value = new Random().nextInt(100);
-            DeviceReading reading = new DeviceReading(value,count);
-            readings.add(reading);
-            addEntry(value);
-            count++;
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    if (plotData){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                int random;
+                                if (value < lowerBound){
+                                    lastValue = value;
+                                    value += 75;
+                                }
+                                else if (value < 1500){
+                                    if (lastValue < lowerBound){
+                                        random = new Random().nextInt(100 - 25) + 25;
+                                        value += random;
+                                    } else {
+                                        if (value < 1350){
+                                            lowerBound = 1350;
+                                        }
+                                        random = new Random().nextInt(25) - 75;
+                                        value += random;
+                                    }
+                                }
+                                else {
+                                    if (timerCount > 30){
+                                        timerCount = 0;
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(CurrentRunActivity.this);
+
+                                        builder.setCancelable(true);
+                                        builder.setTitle("Injury Warning!");
+                                        builder.setMessage("Try to extend your running stride to decrease force impact on ground.");
+
+                                        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.cancel();
+                                            }
+                                        });
+                                        builder.show();
+                                    }
+
+                                    lastValue = value;
+                                    random = new Random().nextInt(50);
+                                    value = value - random;
+                                }
+                                DeviceReading reading = new DeviceReading(value,count);
+                                readings.add(reading);
+                                addEntry(value);
+                                count++;
+                            }
+                        });
+                    }
+                    try {
+                        Thread.sleep(60);
+                    } catch (InterruptedException e) {
+
+                    }
+                }
+            }
+        }).start();
     }
 
     public void changeChronometer() {
@@ -187,7 +242,7 @@ public class CurrentRunActivity extends AppCompatActivity{
             data.notifyDataChanged();
 
             mChart.notifyDataSetChanged();
-            //mChart.setMaxVisibleValueCount(150);
+            mChart.setVisibleXRangeMaximum(40);
             mChart.moveViewToX(data.getEntryCount());
         }
     }
@@ -201,6 +256,4 @@ public class CurrentRunActivity extends AppCompatActivity{
         set.setCubicIntensity(0.2f);
         return set;
     }
-
-
 }
