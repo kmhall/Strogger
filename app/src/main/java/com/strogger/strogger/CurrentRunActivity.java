@@ -1,13 +1,20 @@
 package com.strogger.strogger;
 
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.LightingColorFilter;
-import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Chronometer;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -23,19 +30,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.strogger.strogger.firebase.DeviceReading;
 import com.strogger.strogger.firebase.Run;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.SystemClock;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Chronometer;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
+
+import static com.strogger.strogger.GlobalVariables.audioPopupSwitch;
 
 public class CurrentRunActivity extends AppCompatActivity{
     private Chronometer chronometer;
@@ -140,6 +141,10 @@ public class CurrentRunActivity extends AppCompatActivity{
         new Thread(new Runnable() {
             @Override
             public void run() {
+
+                final Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE );
+                assert v != null;
+
                 while (true){
                     if (plotData){
                         runOnUiThread(new Runnable() {
@@ -165,7 +170,7 @@ public class CurrentRunActivity extends AppCompatActivity{
                                 else {
                                     if (timerCount > 30){
                                         timerCount = 0;
-                                        AlertDialog.Builder builder = new AlertDialog.Builder(CurrentRunActivity.this);
+                                        /*AlertDialog.Builder builder = new AlertDialog.Builder(CurrentRunActivity.this);
 
                                         builder.setCancelable(true);
                                         builder.setTitle("Injury Warning!");
@@ -178,6 +183,7 @@ public class CurrentRunActivity extends AppCompatActivity{
                                             }
                                         });
                                         builder.show();
+                                         */
                                     }
 
                                     lastValue = value;
@@ -188,6 +194,36 @@ public class CurrentRunActivity extends AppCompatActivity{
                                 readings.add(reading);
                                 addEntry(value);
                                 count++;
+
+                                //Simple threshold
+                                if(1575<value) {
+                                    //Vibrate
+                                    if(audioPopupSwitch) {
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                            v.vibrate(VibrationEffect.createOneShot(500,
+                                                    VibrationEffect.DEFAULT_AMPLITUDE));
+                                        } else {
+                                            //deprecated in API 26
+                                            v.vibrate(500);
+                                        }
+                                    }
+
+                                    //Push alert
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(CurrentRunActivity.this);
+
+                                    builder.setCancelable(true);
+                                    builder.setTitle("Injury Warning!");
+                                    builder.setMessage("Try to extend your running stride to decrease force impact on ground.");
+
+                                    builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.cancel();
+                                        }
+                                    });
+                                    builder.show();
+                                }
+
                             }
                         });
                     }
