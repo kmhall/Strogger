@@ -16,11 +16,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -66,7 +68,7 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
     private boolean plotData = true;
 
     int timerCount = 0;
-    int accelMax = 20*100;
+    int accelMax = 30*100;
     int accelMin = 0;
 
     private SensorManager sensorManager;
@@ -89,6 +91,7 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
     long oldTime = System.currentTimeMillis();
     long newTime = 0;
     FastFourierTransformer transformer = new FastFourierTransformer(DftNormalization.STANDARD);
+    private TextView cadence;
 
     //Set everything up with formatting, variables, etc.
     @Override
@@ -96,6 +99,8 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
         super.onCreate(savedInstanceState);
         setContentView(R.layout.current_run);
         Log.d("Karson", "onCreate");
+
+        cadence = findViewById(R.id.cadence);
 
         readings = new ArrayList();
 
@@ -106,6 +111,7 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
         mChart.setDragEnabled(true);
         mChart.setScaleEnabled(true);
         mChart.setPinchZoom(true);
+
         YAxis leftAxis = mChart.getAxisLeft();
 
         leftAxis.setTextColor(0XFFFFFFFF);
@@ -121,6 +127,9 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
         x1.setEnabled(true);
         x1.setTextColor(0XFFFFFFFF);
         LineData data = new LineData();
+
+        Legend legend = mChart.getLegend();
+        legend.setTextColor(0xFFFFFFFF);
 
         mChart.setData(data);
 
@@ -322,8 +331,8 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
 
     private LineDataSet createSet(){
         Log.d("Karson", "createSet");
-        LineDataSet set = new LineDataSet(null, "GRF Readings");
-        set.setValueTextColor(0X00000000);
+        LineDataSet set = new LineDataSet(null, "Force Reading");
+        set.setValueTextColor(0x00000000);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         set.setLineWidth(1f);
         set.setColor(0XFF44B84B);
@@ -383,14 +392,19 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
                     }
                 }
                 double guess = maxi / dTime * 1000 * 60;
+                cadence.setText(String.valueOf((int)guess));
                 Log.d("fft", "Guess? " + guess);
 
-                if (guess < 155 && 2.5 < averageAccel) {
-                    notification(alertDialogLow);
-                }
+                if(2.5 < averageAccel) {
+                    cadence.setText(String.valueOf((int)guess));
 
-                if(185 < guess && 2.5 < averageAccel) {
-                    notification(alertDialogHigh);
+                    if (guess < 155) {
+                        notification(alertDialogLow);
+                    }
+
+                    if (185 < guess) {
+                        notification(alertDialogHigh);
+                    }
                 }
 
 
