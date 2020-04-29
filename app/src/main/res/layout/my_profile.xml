@@ -54,9 +54,10 @@
                     android:id="@+id/profile_first"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="ex. John"
                     android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-"
+                    android:hint="ex. John"
                     android:inputType="textPersonName"
+                    android:maxLength="30"
                     android:textColor="@color/lightText" />
             </LinearLayout>
             <LinearLayout
@@ -82,6 +83,7 @@
                     android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-"
                     android:hint="ex. Smith"
                     android:inputType="textPersonName"
+                    android:maxLength="30"
                     android:textColor="@color/lightText" />
             </LinearLayout>
 
@@ -107,6 +109,7 @@
                     android:layout_height="match_parent"
                     android:hint="ex. 1237891234"
                     android:inputType="date"
+                    android:maxLength="12"
                     android:textColor="@color/lightText" />
         </LinearLayout>
 
@@ -135,6 +138,7 @@
                     android:ems="10"
                     android:hint="ex. 1990"
                     android:inputType="date"
+                    android:maxLength="4"
                     android:textColor="@color/lightText" />
             </LinearLayout>
 

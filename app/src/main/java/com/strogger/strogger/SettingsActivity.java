@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import static com.strogger.strogger.GlobalVariables.audioPopupSwitch;
 import static com.strogger.strogger.GlobalVariables.bluetoothPopupSwitch;
+import static com.strogger.strogger.GlobalVariables.runningPopupSwitch;
 import static com.strogger.strogger.GlobalVariables.heightValue;
 import static com.strogger.strogger.GlobalVariables.weightValue;
 
@@ -21,6 +22,7 @@ public class SettingsActivity extends AccountActivity {
 
     private Switch bluetoothPopup;
     private Switch audioPopup;
+    private Switch runningPopup;
     private EditText heightVal;
     private EditText weightVal;
     private Button saveButton;
@@ -61,6 +63,19 @@ public class SettingsActivity extends AccountActivity {
 
                 SharedPreferences.Editor editor = sharedpreferences.edit();
                 editor.putBoolean("audioPopupSwitch", isChecked);
+                editor.apply();
+            }
+        });
+
+        runningPopup = findViewById(R.id.runningPopup);
+        runningPopupSwitch = sharedpreferences.getBoolean("runningPopupSwitch", true);
+        runningPopup.setChecked(runningPopupSwitch);
+        runningPopup.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                runningPopupSwitch = isChecked;
+
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putBoolean("runningPopupSwitch", isChecked);
                 editor.apply();
             }
         });

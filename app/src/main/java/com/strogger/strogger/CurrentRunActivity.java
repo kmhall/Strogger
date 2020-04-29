@@ -44,8 +44,8 @@ import java.util.Deque;
 import java.util.Iterator;
 
 import static com.strogger.strogger.GlobalVariables.audioPopupSwitch;
-import static com.strogger.strogger.GlobalVariables.bluetoothPopupSwitch;
 import static com.strogger.strogger.GlobalVariables.heightValue;
+import static com.strogger.strogger.GlobalVariables.runningPopupSwitch;
 
 public class CurrentRunActivity extends AppCompatActivity implements SensorEventListener {
     private Chronometer chronometer;
@@ -64,9 +64,6 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
     private LineChart mChart;
     private boolean plotData = true;
 
-    int value = 0;
-    int lastValue;
-    int lowerBound = 1250;
     int timerCount = 0;
     int accelMax = 1*100;
     int accelMin = 0;
@@ -74,9 +71,6 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
     private SensorManager sensorManager;
     private Sensor sensorAccelerometer;
     private Sensor sensorGyroscope;
-    private long lastUpdate = 0;
-    private double last_x, last_y, last_z;
-    private static final int SHAKE_THRESHOLD = 600;
     double acceleration=0;
     double averageAccel=0;
     Vibrator v;
@@ -353,7 +347,7 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
                         }
                     }
 
-                    if (!alertDialog2.isShowing() & bluetoothPopupSwitch) {
+                    if (!alertDialog2.isShowing() & runningPopupSwitch) {
                         alertDialog2.show();
                     }
                 }
@@ -375,11 +369,8 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
                 movingAverage.removeLast();
                 double average = 0;
                 Iterator myIt = movingAverage.iterator();
-                int deb = 0;
                 while (myIt.hasNext()) {
-                    //Log.d("Average", String.valueOf(deb));
                     average += (double) myIt.next();
-                    deb++;
                 }
                 average = average / averageBox;
                 Log.d("Average", "avg: " + average);
@@ -399,7 +390,7 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
                         }
                     }
 
-                    if (!alertDialog.isShowing() & bluetoothPopupSwitch) {
+                    if (!alertDialog.isShowing() & runningPopupSwitch) {
                         alertDialog.show();
                     }
                 }

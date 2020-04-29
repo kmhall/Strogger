@@ -20,33 +20,43 @@ android:background="@color/background"
         android:textSize="18sp" />
 
     <Switch
-        android:textColor="@color/lightText"
-
         android:id="@+id/audioPopup"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/bluetoothPopup"
-        android:text="Enable audio feedback"
+        android:text="Enable vibration feedback"
+        android:textColor="@color/lightText"
         android:textSize="18sp" />
 
-    <LinearLayout
-        app:theme="@style/textInput2"
+    <Switch
+        android:id="@+id/runningPopup"
 
-        android:id="@+id/height"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/audioPopup"
-        android:orientation="horizontal">
+        android:text="Enable form tips while running"
+        android:textColor="@color/lightText"
+        android:textSize="18sp" />
+
+    <LinearLayout
+        android:id="@+id/height"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/runningPopup"
+        android:orientation="horizontal"
+        app:theme="@style/textInput2">
 
         <TextView
-            android:textColor="@color/lightText"
-
             android:id="@+id/heightText"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Height"
-             android:textSize="18sp" />
+            android:textColor="@color/lightText"
+            android:textSize="18sp" />
 
         <EditText
             android:id="@+id/heightVal"
@@ -56,6 +66,7 @@ android:background="@color/background"
             android:editable="true"
             android:hint="Height (inches)"
             android:inputType="number"
+            android:maxLength="2"
             android:maxLines="1"
             android:textColor="@color/lightText"
             android:textSize="18sp" />
@@ -89,6 +100,7 @@ android:background="@color/background"
             android:editable="true"
             android:hint="Weight (pounds)"
             android:inputType="number"
+            android:maxLength="3"
             android:maxLines="1"
             android:textColor="@color/lightText"
             android:textSize="18sp" />
