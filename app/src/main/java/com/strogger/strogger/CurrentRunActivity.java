@@ -1,6 +1,5 @@
 package com.strogger.strogger;
 
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -35,13 +34,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.strogger.strogger.firebase.DeviceReading;
 import com.strogger.strogger.firebase.Run;
 
+import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.transform.DftNormalization;
+import org.apache.commons.math3.transform.FastFourierTransformer;
+import org.apache.commons.math3.transform.TransformType;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Deque;
-import java.util.Iterator;
 
 import static com.strogger.strogger.GlobalVariables.audioPopupSwitch;
 import static com.strogger.strogger.GlobalVariables.heightValue;
@@ -65,20 +66,29 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
     private boolean plotData = true;
 
     int timerCount = 0;
-    int accelMax = 1*100;
+    int accelMax = 20*100;
     int accelMin = 0;
 
     private SensorManager sensorManager;
     private Sensor sensorAccelerometer;
     private Sensor sensorGyroscope;
-    double acceleration=0;
+    double accelerationLinear=0;
+    double accelerationGyro=0;
     double averageAccel=0;
     Vibrator v;
-    AlertDialog alertDialog;
-    AlertDialog alertDialog2;
-    Deque<Double> movingAverage = new ArrayDeque<>();
-    int averageBox = 10; //decent #, -> 100 for longer feedback gaps.
-    Deque<Double> movingAverage2 = new ArrayDeque<>();
+    AlertDialog alertDialogTwist;
+    AlertDialog alertDialogForce;
+    AlertDialog alertDialogLow;
+    AlertDialog alertDialogHigh;
+
+    int averageBox = 1024*4; //has to be power of 2
+    double movingAverage[] = new double[averageBox];
+    double movingAverage2[] = new double[averageBox];
+    int iG=0;
+    int iA=0;
+    long oldTime = System.currentTimeMillis();
+    long newTime = 0;
+    FastFourierTransformer transformer = new FastFourierTransformer(DftNormalization.STANDARD);
 
     //Set everything up with formatting, variables, etc.
     @Override
@@ -120,8 +130,8 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         sensorGyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-        sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, sensorGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(this, sensorGyroscope, SensorManager.SENSOR_DELAY_FASTEST);
 
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE );
         assert v != null;
@@ -136,19 +146,40 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
                 dialogInterface.cancel();
             }
         });
-        alertDialog = builder.create();
+        alertDialogTwist = builder.create();
 
-        AlertDialog.Builder builder2 = new AlertDialog.Builder(CurrentRunActivity.this);
-        builder2.setCancelable(true);
-        builder2.setTitle("Injury Warning!");
-        builder2.setMessage("Excessive pumping of the arms can cause overstriding. Try to keep the arms from moving too much");
-        builder2.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+        builder.setCancelable(true);
+        builder.setTitle("Injury Warning!");
+        builder.setMessage("Excessive pumping of the arms can cause overstriding. Try to keep the arms from moving too much");
+        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.cancel();
             }
         });
-        alertDialog2 = builder2.create();
+        alertDialogForce = builder.create();
+
+        builder.setCancelable(true);
+        builder.setTitle("Injury Warning!");
+        builder.setMessage("Your cadence is very low which can lead to overstriding.");
+        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        alertDialogLow = builder.create();
+
+        builder.setCancelable(true);
+        builder.setTitle("Injury Warning!");
+        builder.setMessage("Your cadence is very high. Try lengthening your stride.");
+        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        alertDialogHigh = builder.create();
 
         FloatingActionButton mChronometerButton = findViewById(R.id.chronometer_button);
         mChronometerButton.setImageResource(R.drawable.ic_pause);
@@ -188,7 +219,8 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
         chronometer.start();
         running = true;
 
-        sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(this, sensorGyroscope, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     //App actually running
@@ -197,10 +229,8 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
         super.onResume();
         Log.d("Karson", "onResume");
 
-        sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, sensorGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
-
-        //sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(this, sensorGyroscope, SensorManager.SENSOR_DELAY_FASTEST);
 
         new Thread(new Runnable() {
             @Override
@@ -213,9 +243,9 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
                                 Log.d("Karson", "too deep");
 
                                 //store and incremento
-                                DeviceReading reading = new DeviceReading(acceleration,count);
+                                DeviceReading reading = new DeviceReading(accelerationLinear,count);
                                 readings.add(reading);
-                                addEntry((int)(acceleration*100));
+                                addEntry((int)(accelerationLinear*100));
                             }
                         });
                     }
@@ -320,36 +350,56 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
             double ya = event.values[1];
             double za = event.values[2];
 
-            double acceleration = Math.hypot(Math.hypot(xa, ya), za);
-            movingAverage2.addFirst(acceleration);
-            if (averageBox < movingAverage2.size()) {
-                movingAverage2.removeLast();
+            accelerationLinear = Math.hypot(Math.hypot(xa, ya), za);
+
+            movingAverage2[iA] = accelerationLinear;
+            iA++;
+
+            if (averageBox <= iA) {
+                newTime = System.currentTimeMillis();
+                double dTime = newTime - oldTime;
+                Log.d("fft", "elapsed (s): " + (int) (dTime / 1000));
+                oldTime = System.currentTimeMillis();
+
+                Complex[] fft = transformer.transform(movingAverage2, TransformType.FORWARD);
+
                 averageAccel = 0;
-                Iterator myIt = movingAverage2.iterator();
-                while (myIt.hasNext()) {
-                    averageAccel += (double) myIt.next();
+
+                Log.d("fft", "length: " + fft.length);
+                for (int i = 0; i < averageBox; i++) {
+                    //Log.d("fft", (int)(i/dTime*1000*60) + ": " + (int)(fft[i].abs()));
+                    //Log.d("fft", i + ": " + (int)(fft[i].abs()));
+                    averageAccel += movingAverage2[i];
                 }
                 averageAccel = averageAccel / averageBox;
                 Log.d("Average", "avgAccel: " + averageAccel);
-                movingAverage2.clear();
+
+                double maxi = 0;
+                double maxVal = 0;
+                for (int i = 45; i < 75; i++) {
+                    if (maxVal < fft[i].abs()) {
+                        maxVal = fft[i].abs();
+                        maxi = i;
+                    }
+                }
+                double guess = maxi / dTime * 1000 * 60;
+                Log.d("fft", "Guess? " + guess);
+
+                if (guess < 155 && 2.5 < averageAccel) {
+                    notification(alertDialogLow);
+                }
+
+                if(185 < guess && 2.5 < averageAccel) {
+                    notification(alertDialogHigh);
+                }
+
+
+                movingAverage2 = new double[averageBox];
+                iA=0;
 
                 if (15 *72/(double)heightValue < averageAccel) {
                     Log.d("Karson", "Accel threshold");
-
-                    if (audioPopupSwitch) {
-                        Log.d("Karson", "Audio warning");
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            v.vibrate(VibrationEffect.createOneShot(500,
-                                    VibrationEffect.DEFAULT_AMPLITUDE));
-                        } else {
-                            //deprecated in API 26
-                            v.vibrate(500);
-                        }
-                    }
-
-                    if (!alertDialog2.isShowing() & runningPopupSwitch) {
-                        alertDialog2.show();
-                    }
+                    notification(alertDialogForce);
                 }
             }
         } else if (mySensor.getType() == Sensor.TYPE_GYROSCOPE) {
@@ -363,36 +413,23 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
             Log.d("ratio", "ratav: " + String.valueOf(rat));
             Log.d("ratio", "ratsq: " + String.valueOf(ratOr));
 
-            acceleration = rat;
-            movingAverage.addFirst(rat);
-            if (averageBox < movingAverage.size()) {
-                movingAverage.removeLast();
+            accelerationGyro = rat;
+            movingAverage[iG] = rat;
+            iG++;
+            if (averageBox <= iG) {
                 double average = 0;
-                Iterator myIt = movingAverage.iterator();
-                while (myIt.hasNext()) {
-                    average += (double) myIt.next();
+                for(int i=0; i<averageBox; i++) {
+                    average += movingAverage[i];
                 }
                 average = average / averageBox;
-                Log.d("Average", "avg: " + average);
-                movingAverage.clear();
+                Log.d("Average", "avgGyro: " + average);
+
+                movingAverage = new double[averageBox];
+                iG=0;
 
                 if (0.5 < average && 2.5<averageAccel) {
                     Log.d("Karson", "Gyro threshold");
-
-                    if (audioPopupSwitch) {
-                        Log.d("Karson", "Audio warning");
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            v.vibrate(VibrationEffect.createOneShot(500,
-                                    VibrationEffect.DEFAULT_AMPLITUDE));
-                        } else {
-                            //deprecated in API 26
-                            v.vibrate(500);
-                        }
-                    }
-
-                    if (!alertDialog.isShowing() & runningPopupSwitch) {
-                        alertDialog.show();
-                    }
+                    notification(alertDialogTwist);
                 }
             }
         }
@@ -401,6 +438,24 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         //Put nothing here
+    }
+
+    private void notification(AlertDialog myAlertDialog) {
+        if (audioPopupSwitch) {
+            Log.d("Karson", "Audio warning");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                v.vibrate(VibrationEffect.createOneShot(500,
+                        VibrationEffect.DEFAULT_AMPLITUDE));
+            } else {
+                //deprecated in API 26
+                v.vibrate(500);
+            }
+        }
+
+        Log.d("Karson", "Vibration warning");
+        if (!myAlertDialog.isShowing() & runningPopupSwitch) {
+            myAlertDialog.show();
+        }
     }
 
 }

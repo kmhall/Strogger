@@ -16,12 +16,14 @@ package com.strogger.strogger;
         import com.google.firebase.database.ValueEventListener;
         import com.strogger.strogger.firebase.User;
 
+        import de.hdodenhof.circleimageview.CircleImageView;
+
 public class MyProfileActivity extends AccountActivity implements View.OnClickListener{
 
     private Button updateProfileButton;
     private DatabaseReference mDatabase;
     private  String myUserId;
-
+    private CircleImageView circleImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,9 @@ public class MyProfileActivity extends AccountActivity implements View.OnClickLi
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View contentView = inflater.inflate(R.layout.my_profile, null, false);
         super.dl.addView(contentView, 0);
+
+        circleImageView = findViewById(R.id.profile);
+        //circleImageView.onTouchEvent()
 
         updateProfileButton = findViewById(R.id.update_profile);
         updateProfileButton.setOnClickListener(this);
