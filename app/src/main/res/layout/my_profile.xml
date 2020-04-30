@@ -14,17 +14,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profile"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
-                android:layout_marginLeft="88dp"
+                android:layout_gravity="center"
                 android:layout_marginTop="60dp"
                 android:clickable="true"
                 android:elevation="5dp"
@@ -38,17 +39,18 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_marginTop="10dp"
                 android:layout_height="60dp"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal"
                 app:theme="@style/textInput2">
+
                 <TextView
                     android:layout_width="100dp"
                     android:layout_height="match_parent"
-                    android:text="First"
-                    android:textSize="24dp"
                     android:gravity="center"
-                    android:textColor="@color/lightText" />
+                    android:text="First"
+                    android:textColor="@color/lightText"
+                    android:textSize="24dp" />
 
                 <EditText
                     android:id="@+id/profile_first"
@@ -60,20 +62,22 @@
                     android:maxLength="30"
                     android:textColor="@color/lightText" />
             </LinearLayout>
-            <LinearLayout
-                app:theme="@style/textInput2"
-                android:layout_width="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_height="60dp"
-                android:orientation="horizontal">
-                <TextView
-                    android:textColor="@color/lightText"
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                app:theme="@style/textInput2">
+
+                <TextView
                     android:layout_width="100dp"
+
                     android:layout_height="match_parent"
+                    android:gravity="center"
                     android:text="Last"
-                    android:textSize="24dp"
-                    android:gravity="center"/>
+                    android:textColor="@color/lightText"
+                    android:textSize="24dp" />
 
                 <EditText
                     android:id="@+id/profile_last"
@@ -88,19 +92,20 @@
             </LinearLayout>
 
             <LinearLayout
-                app:theme="@style/textInput2"
                 android:layout_width="match_parent"
-            android:layout_marginTop="10dp"
-            android:layout_height="60dp"
-            android:orientation="horizontal">
-            <TextView
-                android:textColor="@color/lightText"
+                android:layout_height="60dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                app:theme="@style/textInput2">
 
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:text="Phone"
-                android:textSize="24dp"
-                android:gravity="center"/>
+                <TextView
+                    android:layout_width="100dp"
+
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="Phone"
+                    android:textColor="@color/lightText"
+                    android:textSize="24dp" />
 
                 <EditText
                     android:id="@+id/profile_phone"
@@ -111,23 +116,24 @@
                     android:inputType="date"
                     android:maxLength="12"
                     android:textColor="@color/lightText" />
-        </LinearLayout>
+            </LinearLayout>
 
             <LinearLayout
-                app:theme="@style/textInput2"
-
                 android:layout_width="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_height="60dp"
-                android:orientation="horizontal">
-                <TextView
-                    android:textColor="@color/lightText"
 
+                android:layout_height="60dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                app:theme="@style/textInput2">
+
+                <TextView
                     android:layout_width="100dp"
+
                     android:layout_height="match_parent"
+                    android:gravity="center"
                     android:text="DOB"
-                    android:textSize="24dp"
-                    android:gravity="center"/>
+                    android:textColor="@color/lightText"
+                    android:textSize="24dp" />
 
                 <EditText
                     android:id="@+id/profile_dob"
@@ -143,14 +149,13 @@
             </LinearLayout>
 
             <Button
-                android:textColor="@color/lightText"
-                android:background="@drawable/button_background"
                 android:id="@+id/update_profile"
-                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/button_background"
                 android:text="Update"
-                />
+                android:textColor="@color/lightText" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

@@ -411,7 +411,7 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
                 movingAverage2 = new double[averageBox];
                 iA=0;
 
-                if (15 *72/(double)heightValue < averageAccel) {
+                if (heightValue != -1 && 15 *72/(double)heightValue < averageAccel) {
                     Log.d("Karson", "Accel threshold");
                     notification(alertDialogForce);
                 }
