@@ -3,6 +3,7 @@ package com.strogger.strogger;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -99,6 +100,9 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
         super.onCreate(savedInstanceState);
         setContentView(R.layout.current_run);
         Log.d("Karson", "onCreate");
+
+        //Lock screen orientation to vertical.
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         cadence = findViewById(R.id.cadence);
 
@@ -392,8 +396,7 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
                     }
                 }
                 double guess = maxi / dTime * 1000 * 60;
-                cadence.setText(String.valueOf((int)guess));
-                Log.d("fft", "Guess? " + guess);
+                Log.d("Average", "Cadence? " + guess);
 
                 if(2.5 < averageAccel) {
                     cadence.setText(String.valueOf((int)guess));
@@ -411,7 +414,7 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
                 movingAverage2 = new double[averageBox];
                 iA=0;
 
-                if (heightValue != -1 && 15 *72/(double)heightValue < averageAccel) {
+                if (heightValue != -1 && 30 *72/(double)heightValue < averageAccel) {
                     Log.d("Karson", "Accel threshold");
                     notification(alertDialogForce);
                 }

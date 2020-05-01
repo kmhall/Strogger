@@ -41,41 +41,42 @@
         android:id="@+id/linechart"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:layout_marginTop="40dp"/>
+        android:layout_marginTop="40dp">
 
-    <Button
-        android:id="@+id/end_run_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/end_run"
-        android:layout_gravity="center"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/button_background"
-         android:textColor="@color/lightText"
-        />
+    </com.github.mikephil.charting.charts.LineChart>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cadence:"
+            android:text="Cadence (SPM): "
             android:textColor="@color/lightText"
-            android:textSize="18sp" />
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/cadence"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:editable="false"
+            android:layout_height="match_parent"
             android:hint="Your cadence here"
             android:textColor="@color/lightText"
-            android:textSize="18sp" />
+            android:textSize="24sp" />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/end_run_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20sp"
+        android:background="@drawable/button_background"
+        android:text="@string/end_run"
+        android:textColor="@color/lightText" />
 
 </LinearLayout>
