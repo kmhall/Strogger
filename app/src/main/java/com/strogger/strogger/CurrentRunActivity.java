@@ -117,7 +117,6 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
         mChart.setPinchZoom(true);
 
         YAxis leftAxis = mChart.getAxisLeft();
-
         leftAxis.setTextColor(0XFFFFFFFF);
         leftAxis.setAxisMaximum(accelMax);
         leftAxis.setAxisMinimum(accelMin);
@@ -474,5 +473,4 @@ public class CurrentRunActivity extends AppCompatActivity implements SensorEvent
             myAlertDialog.show();
         }
     }
-
 }
