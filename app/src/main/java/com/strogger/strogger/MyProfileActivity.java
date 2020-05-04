@@ -1,8 +1,12 @@
 package com.strogger.strogger;
 
         import android.content.Context;
+        import android.content.ContextWrapper;
         import android.content.Intent;
+        import android.graphics.Bitmap;
+        import android.net.Uri;
         import android.os.Bundle;
+        import android.provider.MediaStore;
         import android.view.LayoutInflater;
         import android.view.View;
         import android.widget.Button;
@@ -15,7 +19,7 @@ package com.strogger.strogger;
         import com.google.firebase.database.FirebaseDatabase;
         import com.google.firebase.database.ValueEventListener;
         import com.strogger.strogger.firebase.User;
-
+        import static com.strogger.strogger.GlobalVariables.profileImgUri;
         import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MyProfileActivity extends AccountActivity implements View.OnClickListener{
@@ -38,7 +42,16 @@ public class MyProfileActivity extends AccountActivity implements View.OnClickLi
         super.dl.addView(contentView, 0);
 
         circleImageView = findViewById(R.id.profile);
-        //circleImageView.onTouchEvent()
+        if(profileImgUri != Uri.EMPTY){
+            circleImageView.setImageURI(profileImgUri);
+        }
+        circleImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openGallery();
+            }
+        });
+
 
         updateProfileButton = findViewById(R.id.update_profile);
         updateProfileButton.setOnClickListener(this);
@@ -86,4 +99,20 @@ public class MyProfileActivity extends AccountActivity implements View.OnClickLi
                 startActivity(new Intent(MyProfileActivity.this, MyProfileActivity.class));
         }
     }
+
+    private static final int PICK_IMAGE = 100;
+    private void openGallery(){
+        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        startActivityForResult(gallery, PICK_IMAGE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode,resultCode, data);
+        if(resultCode == RESULT_OK && requestCode == PICK_IMAGE){
+            profileImgUri = data.getData();
+            circleImageView.setImageURI(profileImgUri);
+        }
+    }
+
 }
